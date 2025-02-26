@@ -1,0 +1,12 @@
+\babel@toc {italian}{}\relax 
+\babel@toc {italian}{}\relax 
+\contentsline {chapter}{\numberline {1}Processi e Thread}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Processi}{2}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Unix}{2}{subsection.1.1.1}%
+\contentsline {subsubsection}{Creazione di un processo}{2}{section*.2}%
+\contentsline {subsubsection}{Esecuzione di un comando}{2}{section*.3}%
+\contentsline {subsection}{\numberline {1.1.2}Pipe}{3}{subsection.1.1.2}%
+\contentsline {section}{\numberline {1.2}Thread}{3}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}POSIX}{3}{subsection.1.2.1}%
+\contentsline {subsubsection}{Creazione di un thread}{3}{section*.4}%
+\contentsline {subsubsection}{Locks}{3}{section*.5}%
