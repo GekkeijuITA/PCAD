@@ -71,4 +71,58 @@
                         \texttt{int pthread\_mutex\_unlock(pthread\_mutex\_t *mutex)}
                     \end{center}
                     Queste due funzioni ritornano 0 se tutto è andato a buon fine.
+    \chapter{Interleaving e Mutua esclusione}
+        \section{Istruzioni atomiche}
+            Un'istruzione atomica è eseguita completamente senza essere interrotta, in questo corso supponiamo che ogni riga nei programmi sarà atomica.
+            \begin{lstlisting}[language=C]
+            x = x + 1;
+            if(x == 2) { // Questo if potrebbe essere interrotto e x potrebbe cambiare
+                x = 3;
+            }
+            \end{lstlisting}
+        \section{Ipotesi di atomicità}
+            \customfbox{Le ipotesi possono cambiare a seconda del compilatore, il processore, ecc.}
+            \textbf{Evitare di scrivere istruzioni che manipolano più di una volta la stessa variabile condivisa tra più processi o thread senza un'adeguata sincronizzazione.}
+            \begin{itemize}
+                \item \textbf{Registri atomici}: operazione di lettura e di scrittura atomiche
+                \item \textbf{Test-and-set}: si può testaare e modificare una variabile senza essere interrotto
+                \item \textbf{Swap}: si può cambiare il valore di un registro locale e di uno condiviso in modo atomico.
+                \item \ldots
+            \end{itemize}
+        \section{Interleaving}
+            \customfbox{
+                \begin{definition}
+                    Uno stato di un programma concorrente $P$ è una tupla con: \begin{itemize}
+                        \item un puntatore d'istruzioni per ciascun processo
+                        \item un valore per ciascuna variabile (locale o condivisa)
+                    \end{itemize}
+                \end{definition}
+            }
+            \customfbox{
+                \begin{definition}
+                    Per due stati $s_{1}$ e $s_{2}$ si scrive $s_{1}\rightarrow s_{2}$ quando si può passare da $s_{1}$ a $s_{2}$ usando una delle istruzioni puntata in $s_{1}$.
+                \end{definition}
+            }
+            \customfbox{
+                \begin{definition}
+                    Il diagramma degli stati di $P$ è il sistema di transizione $TS_{P}=(S,\rightarrow,s_{0})$ dove:
+                    \begin{itemize}
+                        \item $S$ è l'insieme degli stati di $P$
+                        \item $s_{0}$ è lo stato iniziale di $P$
+                        \item $\rightarrow$ è la relazione di transizione inclusa in $S \times S$
+                    \end{itemize}
+                    Un cammmino in $TS_{P}$ è uno scenario possibile per $P$.
+                \end{definition}
+            }
+            \begin{center}
+                \includegraphics[width=0.6\textwidth]{Images/tsp.png}
+            \end{center}
+            I cammini in $TS_{P}$ corrispondono a tutti gli intrecci possibili per $P$. Facciamo quindi l'ipotesi che tutti questi intrecci siano possibili.
+                \subsection{Semantica ragionevole}
+                    \begin{itemize}
+                        \item \textbf{Sistemi con un processore}: c'è una successione d'istruzioni
+                        \item \textbf{Sistemi con più processori}: ogni processo è legato a un processore e l'interleaving non corrisponde esattamente alla realtà (azioni parallele), ma è corretta se non ci sono conflitti sulle risorse.
+                        \item \textbf{Sistemi distribuiti}: diversi computer, nessuna variabile condivisa, comunicazione tramite messaggi. Molto diversa rispetto ai primi due casi, ma la semantica rimane interessante se uno ci aggiunge l'invio e la ricezione di messaggi.
+                    \end{itemize}
+            \section{Mutua esclusione}
 \end{document}
