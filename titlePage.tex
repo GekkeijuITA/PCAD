@@ -1,0 +1,20 @@
+\newcommand{\imagePath}{Images/logoUni.png}
+
+\newcommand{\customTitlePage}[5]{
+    \newcommand{\courseTitle}{#1}
+    \newcommand{\authorName}{#2}
+    \newcommand{\academicYear}{#3}
+    \newcommand{\universityName}{#4}
+    
+    \begin{titlepage}
+        \centering
+        \includegraphics[width=0.5\textwidth]{\imagePath}\par\vspace{1cm}
+        {\scshape\LARGE \universityName \par}
+        \vspace{1.5cm}
+        {\huge\bfseries \courseTitle \par}
+        \vspace{2cm}
+        {\Large\itshape \authorName \par}
+        \vfill
+        \academicYear
+    \end{titlepage}
+}

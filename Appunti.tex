@@ -1,0 +1,128 @@
+\documentclass[12pt, a4paper]{report}
+\usepackage[utf8]{inputenc}
+\input{variables.tex}
+\input{titlePage.tex}
+\preamble
+
+\begin{document}
+    \customTitlePage{Programmazione Concorrente Algoritmi Distribuiti}{Lorenzo Vaccarecci}{Anno Accademico 2024/2025}{Università degli Studi di Genova}
+    \newpage
+    \tableofcontents
+    \chapter{Processi e Thread}
+        \section{Processi}
+            Un processo è un programma in corso di esecuzione. Ogni processo necessita di uno spazio di indirizzamento dedicato (stack) e di input e output. \\
+            Più processi possono essere eseguiti sulla stessa macchina in un modo quasi simultaneo, un processo non ha accesso allo spazio di indirizzamento degli altri e permette di avere un'illusione di parallelismo.
+            \subsection{Unix}
+                \subsubsection{Creazione di un processo}
+                    \begin{center}
+                        \texttt{pid\_t fork(void);}
+                    \end{center}
+                    Ritorna 0 al figlio e il PID del figlio al padre. \\
+                    \texttt{fork()} crea un processo figlio che è una copia esatta del padre, con lo stesso codice, dati e spazio di indirizzamento. Le variabili non sono condivise.
+                    \begin{center}
+                        \includegraphics[width=0.8\textwidth]{Images/fork.png}
+                    \end{center}
+                \subsubsection{Esecuzione di un comando}
+                    \begin{center}
+                        \texttt{int execvp(const char *file, char *const argv[]);}
+                    \end{center}
+                    Dove \texttt{file} è il nomde del comando che vogliamo eseguire e l'array \texttt{argv} contiene: 
+                    \begin{itemize}
+                        \item Il nome del comando nel primo campo
+                        \item Gli argomenti del comando
+                        \item \texttt{NULL} per indicare la fine dell'array in posizione finale \underline{obbligatoria}
+                    \end{itemize}
+            \subsection{Pipe}
+                Servono per la comunicazione fra processi. Le pipes sono dei canali unidirezionali considerati come dei descrittori di file.
+                \begin{center}
+                    \includegraphics[width=0.7\textwidth]{Images/pipe.png}
+                \end{center}
+                \begin{center}
+                    \texttt{int pipe(int fd[2]);}
+                \end{center}
+                Dove \texttt{fd[0]} è il descrittore di lettura e \texttt{fd[1]} è il descrittore di scrittura. Dopo il forkk, entrambi i  processi possono scrivere e leggere ma perchè funzioni bisogna chiudere il descrittore che non si usa.
+        \section{Thread}
+            Un thread è un filo d'esecuzione dentro un programma, è eseguito da un processo e possono esserci più thread in un processo (processo multi-thread). Ogni thread è diverso e ha come attributi: \begin{itemize}
+                \item Un puntatore di esecuzione o \texttt{PC} (Program Counter)
+                \item Uno stack
+            \end{itemize}
+            \subsection{POSIX}
+                \begin{center}
+                    \texttt{\#include <pthread.h>}
+                \end{center}
+                Bisogna anche dire al momento della compilazione che si desidera usare questa libreria con il flag \texttt{-pthread} o \texttt{-lpthread}.
+                \subsubsection{Creazione di un thread}
+                    \begin{center}
+                        \texttt{int pthread\_create(pthread\_t *thread, const pthread\_attr\_t *attr, void *(*start\_routine) (void *), void *arg);}
+                    \end{center}
+                    Per condividere le variabili si usa la keyword \texttt{volatile}.
+                \subsubsection{Locks}
+                    L'accesso ai dati condivisi deve essere protetto:
+                    \begin{itemize}
+                        \item Un thread che desidera accedere a un dato condiviso richiede il lock
+                        \item Se il lock è libero, prosegue altrimento rimaane bloccato finchè il lock non è libero
+                        \item Quando ha finito, rilascia il lock
+                    \end{itemize}
+                    Questi lock sono condivisi tra i threads.\\
+                    E' buona pratica far liberare il lock dal thread che lo ha preso.
+                    \begin{center}
+                        \texttt{pthread\_mutex\_t lock = PTHREAD\_MUTEX\_INITIALIZER;}\\
+                        \texttt{int pthread\_mutex\_lock(pthread\_mutex\_t *mutex)}\\
+                        \texttt{int pthread\_mutex\_unlock(pthread\_mutex\_t *mutex)}
+                    \end{center}
+                    Queste due funzioni ritornano 0 se tutto è andato a buon fine.
+    \chapter{Interleaving e Mutua esclusione}
+        \section{Istruzioni atomiche}
+            Un'istruzione atomica è eseguita completamente senza essere interrotta, in questo corso supponiamo che ogni riga nei programmi sarà atomica.
+            \begin{lstlisting}[language=C]
+            x = x + 1;
+            if(x == 2) { // Questo if potrebbe essere interrotto e x potrebbe cambiare
+                x = 3;
+            }
+            \end{lstlisting}
+        \section{Ipotesi di atomicità}
+            \customfbox{Le ipotesi possono cambiare a seconda del compilatore, il processore, ecc.}
+            \textbf{Evitare di scrivere istruzioni che manipolano più di una volta la stessa variabile condivisa tra più processi o thread senza un'adeguata sincronizzazione.}
+            \begin{itemize}
+                \item \textbf{Registri atomici}: operazione di lettura e di scrittura atomiche
+                \item \textbf{Test-and-set}: si può testaare e modificare una variabile senza essere interrotto
+                \item \textbf{Swap}: si può cambiare il valore di un registro locale e di uno condiviso in modo atomico.
+                \item \ldots
+            \end{itemize}
+        \section{Interleaving}
+            \customfbox{
+                \begin{definition}
+                    Uno stato di un programma concorrente $P$ è una tupla con: \begin{itemize}
+                        \item un puntatore d'istruzioni per ciascun processo
+                        \item un valore per ciascuna variabile (locale o condivisa)
+                    \end{itemize}
+                \end{definition}
+            }
+            \customfbox{
+                \begin{definition}
+                    Per due stati $s_{1}$ e $s_{2}$ si scrive $s_{1}\rightarrow s_{2}$ quando si può passare da $s_{1}$ a $s_{2}$ usando una delle istruzioni puntata in $s_{1}$.
+                \end{definition}
+            }
+            \customfbox{
+                \begin{definition}
+                    Il diagramma degli stati di $P$ è il sistema di transizione $TS_{P}=(S,\rightarrow,s_{0})$ dove:
+                    \begin{itemize}
+                        \item $S$ è l'insieme degli stati di $P$
+                        \item $s_{0}$ è lo stato iniziale di $P$
+                        \item $\rightarrow$ è la relazione di transizione inclusa in $S \times S$
+                    \end{itemize}
+                    Un cammmino in $TS_{P}$ è uno scenario possibile per $P$.
+                \end{definition}
+            }
+            \begin{center}
+                \includegraphics[width=0.6\textwidth]{Images/tsp.png}
+            \end{center}
+            I cammini in $TS_{P}$ corrispondono a tutti gli intrecci possibili per $P$. Facciamo quindi l'ipotesi che tutti questi intrecci siano possibili.
+                \subsection{Semantica ragionevole}
+                    \begin{itemize}
+                        \item \textbf{Sistemi con un processore}: c'è una successione d'istruzioni
+                        \item \textbf{Sistemi con più processori}: ogni processo è legato a un processore e l'interleaving non corrisponde esattamente alla realtà (azioni parallele), ma è corretta se non ci sono conflitti sulle risorse.
+                        \item \textbf{Sistemi distribuiti}: diversi computer, nessuna variabile condivisa, comunicazione tramite messaggi. Molto diversa rispetto ai primi due casi, ma la semantica rimane interessante se uno ci aggiunge l'invio e la ricezione di messaggi.
+                    \end{itemize}
+            \section{Mutua esclusione}
+\end{document}
