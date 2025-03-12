@@ -42,7 +42,7 @@ void *thread_func(void *arg)
     for (int i = 0; i < NUM_CYCLES; i++)
     {
         printf("Thread %d raggiunge la barriera ciclo %d\n", id, i + 1);
-        pthread_my_barrier_wait((my_barrier *)arg); // NOTA: qui uso la barriera globale
+        pthread_my_barrier_wait((my_barrier *)arg);
         printf("Thread %d supera la barriera ciclo %d\n", id, i + 1);
     }
     free(arg);
