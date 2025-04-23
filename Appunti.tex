@@ -8,6 +8,25 @@
     \customTitlePage{Programmazione Concorrente Algoritmi Distribuiti}{Lorenzo Vaccarecci}{Anno Accademico 2024/2025}{Università degli Studi di Genova}
     \newpage
     \tableofcontents
+    \chapter{Introduzione}
+        \section{Perchè usare/sviluppare sistemi concorrenti/distribuiti?}
+            Perchè in questo modo siamo più efficienti, distribuiamo dei dati, condividiamo delle risorse, usiamo reti di computer e per comunicare.
+        \section{Perchè è difficile concettualmente?}
+            Perchè se ho $n$ processi e $m$ istruzioni per processo, ho
+            \begin{equation*}
+                \frac{(n\cdot m)!}{(m!)^{n}}
+            \end{equation*}
+            possibili "percorsi" che un'esecuzione concorrente/distribuita può avere.
+        \section{Programma concorrente}
+            E' un insieme di processi che si eseguono in parallelo (programmi che si eseguono su processori diversi ma anche programmi multi-task che si eseguono sullo stesso processore dando l'illusione del parallelismo) e che comunicano (scambio di dati tramite messaggi o memoria condivisa che permette la sincronizzazione).
+        \section{Esecuzione concorrente}
+            L'esecuzione di un programma concorrente è composto da un insieme di processi ciascuno dei quali dispone di un insieme di istruzioni atomiche. Ogni processo ha un puntatore verso la prossima istruzione da eseguire e l'esecuzione del programma concorrente è un intreccio arbitrario delle istruzioni dei vari processi (interleaving), la prossima istruzione è dunque scelta fra quelle puntate dai vari processori: tanti possibili scenari (1.2).
+        \section{Comunicazione via memoria condivisa}
+            I processi hanno un accesso comune alla memoria che può essere tramite variabile condivisa o con strutture più complesse. Se si usa una variabile condivisa deve essere possibile scrivere e leggere e bisogna fare attenzione alla gestione dell'accesso (se transazione atomica o non atomica). Ci sono vari casi possibili:
+            \begin{itemize}
+                \item \textbf{Multiple Reader/Multiple Writer}
+                \item \textbf{Multiple Reader/Single Writer}
+            \end{itemize}
     \chapter{Processi e Thread}
         \section{Processi}
             Un processo è un programma in corso di esecuzione. Ogni processo necessita di uno spazio di indirizzamento dedicato (stack) e di input e output. \\
