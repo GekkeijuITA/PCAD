@@ -3,7 +3,7 @@ package Laboratori.Laboratorio_3.Esercizio_4;
 // Deadlock
 public class Main {
     public static void main(String[] args) {
-        int runs = 50;
+        int runs = 20;
         for (int j = 0; j < runs; j++) {
             try {
                 RWext rw = new RWext();
@@ -32,7 +32,7 @@ public class Main {
                 }
 
                 System.out.println("======= END =======");
-                System.out.println("The rw's value is " + rw.read());
+                System.out.println("The rw's value is " + rw.getData());
             } catch (Exception e) {
                 System.out.println(e);
                 e.printStackTrace();

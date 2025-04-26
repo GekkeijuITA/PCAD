@@ -1,57 +1,53 @@
 package Laboratori.Laboratorio_3.Esercizio_4;
 
 public class RWext extends RWbasic {
-    private int readers;
-    private boolean isWriting;
-    private boolean newValueWritten;
+    private boolean available;
+    private Object lock = new Object();
 
     public RWext() {
         super();
-        readers = 0;
-        isWriting = false;
-        newValueWritten = false;
+        available = false;
     }
 
     @Override
-    public synchronized void write() {
-        try {
-            while (readers > 0 || isWriting || newValueWritten) {
-                wait();
+    public void write() {
+        synchronized (lock) {
+            try {
+                while (available) {
+                    lock.wait();
+                }
+                super.write();
+                available = true;
+                lock.notifyAll();
+            } catch (Exception e) {
+                System.out.println(e);
+                e.printStackTrace();
             }
-            isWriting = true;
-            super.write();
-            isWriting = false;
-            newValueWritten = true;
-            notifyAll();
-        } catch (Exception e) {
-            System.out.println(e);
-            e.printStackTrace();
         }
     }
 
     @Override
-    public synchronized int read() {
-        try {
-            while (isWriting) {
-                wait();
+    public int read() {
+        synchronized (lock) {
+            try {
+                while (!available) {
+                    lock.wait();
+                }
+                int tmp = super.read();
+                available = false;
+                lock.notifyAll();
+                return tmp;
+            } catch (Exception e) {
+                System.out.println(e);
+                e.printStackTrace();
+                return -1;
             }
-            readers++;
-            int tmp = super.read();
+        }
+    }
 
-            if (newValueWritten) {
-                newValueWritten = false;
-                notifyAll();
-            }
-
-            readers--;
-            if (readers == 0) {
-                notifyAll();
-            }
-            return tmp;
-        } catch (Exception e) {
-            System.out.println(e);
-            e.printStackTrace();
-            return -1;
+    public int getData() {
+        synchronized (lock) {
+            return super.read();
         }
     }
 }
