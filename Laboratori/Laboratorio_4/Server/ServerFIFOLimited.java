@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import Laboratori.Laboratorio_4.Service.ServiceEcho;
 
-public class ServerFIFOUnlimited {
+public class ServerFIFOLimited {
 
     public static void main(String[] args) {
         try {
@@ -14,7 +14,7 @@ public class ServerFIFOUnlimited {
             ServerSocket serverSocket = new ServerSocket(PORT);
             System.out.println("SERVER: started on port " + PORT);
 
-            LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>();
+            LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<>(10);
 
             while (true) {
                 Socket socket = serverSocket.accept();
