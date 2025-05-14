@@ -19,7 +19,7 @@ public class PiscinaTest {
             final int id = i;
             Thread t = new Thread(() -> {
                 try {
-                    p.cliente(id);
+                    p.cliente_no_deadlook(id);
                 } catch (InterruptedException ignored) {
                 }
             });
